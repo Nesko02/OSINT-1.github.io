@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT #1</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #566978;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #293036; 
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #ffffff; 
+        }
+        .container .form-control {
+            background-color: #94b5d6; 
+            color: #ffffff; 
+        }
+        .container .btn {
+            background-color: #28a745; 
+            border-color: #28a745;
+        }
+        .container .btn:hover {
+            background-color: #218838; 
+            border-color: #1e7e34;
+        }
+        .modal-content {
+            background-color: #1e1e1e; /* Fondo del modal */
+            color: #ffffff; /* Color del texto */
+        }
+        .modal-header {
+            border-bottom: 1px solid #343a40; /* Borde del encabezado */
+        }
+        .modal-footer {
+            border-top: 1px solid #343a40; /* Borde del pie */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">OSINT #1</h1>
+        <p class="lead">Responde las siguientes preguntas después de revisar la imagen proporcionada.</p>
+        <button class="btn btn-primary mb-4" onclick="downloadImage('https://upload.wikimedia.org/wikipedia/commons/9/9d/Edificio_Mart%C3%ADnez_de_Hoz_%28SIDE%29.JPG', 'OSINT_1.jpg')">Descargar Imagen</button>
+
+        <form id="osintForm" onsubmit="validateForm(event)">
+            <div class="form-group">
+                <label for="question1">Pregunta 1: ¿En qué país está el edificio alto de la imagen?</label>
+                <input type="text" placeholder="*********" class="form-control" id="question1" name="question1" required>
+            </div>
+            <div class="form-group">
+                <label for="question2">Pregunta 2: ¿Pertenece a alguna organización? ¿A cuál?</label>
+                <input type="text" placeholder="********** ** ************ *** ******" class="form-control" id="question2" name="question2" required>
+            </div>
+            <div class="form-group">
+                <label for="question3">Pregunta 3: ¿Cuál es la latitud y longitud del objetivo?</label>
+                <input type="text" placeholder="-**.****, -**.****" class="form-control" id="question3" name="question3" required>
+            </div>
+            <div class="form-group">
+                <label for="question4">Pregunta 4: ¿Entre qué calles se encuentra el edificio?</label>
+                <input type="text" placeholder="** ** **** * ********* *****" class="form-control" id="question4" name="question4" required>
+            </div>
+            <button type="submit" class="btn btn-success">Enviar Respuestas</button>
+        </form>
+    </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">¡Éxito!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Todas las respuestas son correctas. ¡Bien hecho!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">¡Error!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Algunas respuestas son incorrectas. Por favor, inténtalo de nuevo.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadImage(url, filename) {
+            fetch(url, { mode: 'cors' })
+            .then(response => response.blob())
+            .then(blob => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })
+            .catch(err => console.error('Error al descargar la imagen:', err));
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+            
+            const correctAnswers = {
+                question1: "Argentina",
+                question2: "Secretaria de Inteligencia del Estado",
+                question3: "-34.6037, -58.3816",
+                question4: "25 de Mayo y Bartolome Mitre"
+            };
+
+            const form = document.getElementById('osintForm');
+            const formData = new FormData(form);
+            let allCorrect = true;
+
+            for (let [key, value] of formData.entries()) {
+                if (value.trim().toLowerCase() !== correctAnswers[key].toLowerCase()) {
+                    allCorrect = false;
+                    break;
+                }
+            }
+
+            if (allCorrect) {
+                $('#successModal').modal('show');
+            } else {
+                $('#errorModal').modal('show');
+            }
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
